@@ -1,0 +1,118 @@
+{
+  "project_info": {
+    "project_number": "534285249277",
+    "firebase_url": "https://myapplication11-435cc.firebaseio.com",
+    "project_id": "myapplication11-435cc",
+    "storage_bucket": "myapplication11-435cc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534285249277:android:8d39b772b25317ef",
+        "android_client_info": {
+          "package_name": "bebo.comeandtaste"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "534285249277-g5jppdmkqnl7ldr0276sr962jrqasekr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "bebo.comeandtaste",
+            "certificate_hash": "ff0b4b98cceecbba17b3b9c3a62f3a0b35ea9464"
+          }
+        },
+        {
+          "client_id": "534285249277-5bioibko87mi6nnf7gcbks2ktb4gq69i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAci7PpalzsufVNrrwOHl3LFgb0R7q_W68"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "534285249277-5bioibko87mi6nnf7gcbks2ktb4gq69i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534285249277:android:4458eee8d0f7c5ac",
+        "android_client_info": {
+          "package_name": "bebo.myapplication11"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "534285249277-5bioibko87mi6nnf7gcbks2ktb4gq69i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAci7PpalzsufVNrrwOHl3LFgb0R7q_W68"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534285249277:android:3e13d76c79b42e32",
+        "android_client_info": {
+          "package_name": "com.example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "534285249277-5bioibko87mi6nnf7gcbks2ktb4gq69i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAci7PpalzsufVNrrwOHl3LFgb0R7q_W68"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      },
+      "admob_app_id": "ca-app-pub-3954911785359391~6183917249"
+    }
+  ],
+  "configuration_version": "1"
+}
