@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 public void loadRecipesData(){
 
     RequestQueue queue = Volley.newRequestQueue(this);
-    String url = "https://www.food2fork.com/api/search?key=4d9d538f0f75cdaeb40dfc4fb383e75c";
+    String url = "https://www.food2fork.com/api/search?key=yourapiKey";
     StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
             new Response.Listener<String>() {
                 @Override
