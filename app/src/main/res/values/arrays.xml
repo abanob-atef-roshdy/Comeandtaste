@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+        <array name="List_lables">
+            <item>@string/listEntry1</item>
+            <item>@string/listEntry2</item>
+            <item>@string/listEntry3</item>
+        </array>
+
+        <array name="list_values">
+            <item>@string/listEntryVal1</item>
+            <item>@string/listEntryVal2</item>
+            <item>@string/listEntryVal3</item>
+        </array>
+</resources>

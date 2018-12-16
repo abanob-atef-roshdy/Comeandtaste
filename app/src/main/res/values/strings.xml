@@ -1,4 +1,22 @@
 <resources>
     <string name="app_name">Come and taste</string>
+    <string name="settings_title">Settings</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="listDefValue">popular</string>
+    <string name="listKey">SortBy</string>
+    <string name="listTitle">Sort by</string>
+    <string name="listEntry1">Popular</string>
+    <string name="listEntry2">Top rated</string>
+    <string name="listEntry3">Favourites</string>
+    <string name="edit_defValue">chickens</string>
+    <string name="edit_key">ingredKey</string>
+    <string name="next">Next Page</string>
+    <string name="previous">Previous Page</string>
+    <string name="ed_page_title">page number</string>
+    <string name="ed_page_key">pages</string>
+    <string name="ed_page_defValue">1</string>
+    <string name="edit_title">ingredients in mind</string>
+    <string name="listEntryVal1" translatable="false">t</string>
+    <string name="listEntryVal2" translatable="false">r</string>
+    <string name="listEntryVal3" translatable="false">f</string>
 </resources>
