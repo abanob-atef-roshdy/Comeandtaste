@@ -1,5 +1,7 @@
 package fragments;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,6 +22,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -30,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bebo.comeandtaste.AppDataBase;
+import bebo.comeandtaste.AppExecutor;
 import bebo.comeandtaste.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +58,8 @@ public class RecipeDetailFragment extends Fragment  {
      @BindView(R.id.db_button)
      Button mbutton;
      AppDataBase mDb;
+     @BindView(R.id.adView)
+     AdView mAdView;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -79,6 +87,12 @@ public class RecipeDetailFragment extends Fragment  {
              storeOrDelete();
             }
         });
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+
+        mAdView.loadAd(adRequest);
+        MobileAds.initialize(getActivity(),"ca-app-pub-3954911785359391~1804332260");
         return view;
     }
     public void populatUi(){
@@ -144,36 +158,64 @@ public class RecipeDetailFragment extends Fragment  {
 
     }
     public void save(){
-        mDb.recipeDao().insert(recipesModel);
+        AppExecutor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.recipeDao().insert(recipesModel);
+            }
+        });
+
        // Toast.makeText(getActivity(), "saved", Toast.LENGTH_SHORT).show();
     }
     public void delete(){
-        mDb.recipeDao().delete(recipesModel.getRecipeId());
+        AppExecutor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mDb.recipeDao().delete(recipesModel.getRecipeId());
+
+            }
+        });
+
     }
     public void storeOrDelete(){
         String id = recipesModel.getRecipeId();
-        List<RecipesModel> recipesModelList = mDb.recipeDao().loadRecipeById(id);
-        if(recipesModelList.isEmpty()){
-            save();
-            mbutton.setText("delete");
-            Toast.makeText(getActivity(), "saved", Toast.LENGTH_SHORT).show();
-        }
-        else {
-            delete();
-            mbutton.setText("save");
-            Toast.makeText(getActivity(), "deleted", Toast.LENGTH_SHORT).show();
-        }
+   final LiveData< List<RecipesModel>> recipesModelList = mDb.recipeDao().loadRecipeById(id);
+      recipesModelList.observe(this, new Observer<List<RecipesModel>>() {
+          @Override
+          public void onChanged(@Nullable List<RecipesModel> recipesModels) {
+
+              if(recipesModels.isEmpty()){
+                  save();
+                  mbutton.setText("delete");
+                  Toast.makeText(getActivity(), "saved", Toast.LENGTH_SHORT).show();
+              }
+              else {
+                  delete();
+                  mbutton.setText("save");
+                  Toast.makeText(getActivity(), "deleted", Toast.LENGTH_SHORT).show();
+              }
+              recipesModelList.removeObserver(this);
+          }
+      });
 
     }
     public void starColor(){
         String id = recipesModel.getRecipeId();
-        List<RecipesModel> recipesModelList = mDb.recipeDao().loadRecipeById(id);
-        if(recipesModelList.isEmpty()){
-            mbutton.setText("save");
-            }
-        else {
-            mbutton.setText("delete");
-            }
+     final   LiveData< List<RecipesModel>> recipesModelList = mDb.recipeDao().loadRecipeById(id);
+       recipesModelList.observe(this, new Observer<List<RecipesModel>>() {
+           @Override
+           public void onChanged(@Nullable List<RecipesModel> recipesModels) {
+
+               if(recipesModels.isEmpty()){
+                   mbutton.setText("save");
+               }
+               else {
+                   mbutton.setText("delete");
+               }
+               recipesModelList.removeObserver(this);
+           }
+
+       });
 
     }
 }

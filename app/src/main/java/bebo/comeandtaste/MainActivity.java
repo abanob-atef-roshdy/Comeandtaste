@@ -1,9 +1,14 @@
 package bebo.comeandtaste;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
@@ -35,6 +40,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcels;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,9 +56,11 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
     RecyclerView recyclerView;
     ImageAdapter imageAdapter;
     GridLayoutManager gridLayoutManager;
+    Parcelable mlistState;
     String mIngredient;
     int pageNumber;
     AppDataBase mDb;
+    int flag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +81,18 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
         imageAdapter = new ImageAdapter(recipesModelList,context,MainActivity.this);
 
         recyclerView.setAdapter(imageAdapter);
-        loadRecipesData(sharedPreferences);
+        if(savedInstanceState != null) {
+            mlistState = savedInstanceState.getParcelable("state");
+            gridLayoutManager.onRestoreInstanceState(mlistState);
+            //recipesModelList = (ArrayList) savedInstanceState.getParcelableArrayList("list");
+            flag = savedInstanceState.getInt("fav");
+            if (flag == 1) {
+                retFromDb();
+                }
+                else {
+                loadRecipesData(sharedPreferences);
+            }
+        }
       //  retFromDb();
 
 
@@ -105,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
                 public void onResponse(String response) {
                     // Display the first 500 characters of the response string.
                     try {
-                        //List<RecipesModel> recipesModelList = new ArrayList<>();
+                       // List<RecipesModel> recipesModelList = new ArrayList<>();
                         JSONObject all = new JSONObject(response);
                         JSONArray recipes = all.getJSONArray("recipes");
                         for(int i = 0;i<recipes.length();i++){
@@ -120,14 +139,14 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
 
                         }
 
-
+                        imageAdapter.updateData(recipesModelList);
 
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-                    imageAdapter.updateData(recipesModelList);
+
 
                 }
             }, new Response.ErrorListener() {
@@ -144,14 +163,16 @@ public String retUrl(SharedPreferences sharedPreferences){
     String sort = sharedPreferences.getString(getString(R.string.listKey),getString(R.string.listDefValue));
     pageNumber = Integer.parseInt(sharedPreferences.getString(getString(R.string.ed_page_key),getString(R.string.ed_page_defValue)));
     if(sort.equals("f")){
-
+         flag = 1;
         retFromDb();
         return "";
     }
   else if(sort.equals("r")) {
+        flag = 0;
         mIngredient = sharedPreferences.getString(getString(R.string.edit_key), getString(R.string.edit_defValue));
     }
     else if(sort.equals("t")) {
+        flag = 0;
         mIngredient = "" ;
     }
     String url = "https://www.food2fork.com/api/search?key=&sort="+sort+"&q="+mIngredient+"&page="+pageNumber;
@@ -166,6 +187,15 @@ public String retUrl(SharedPreferences sharedPreferences){
         Intent intent = new Intent(this,RecipeDetailActivity.class);
         intent.putExtra("recipe", Parcels.wrap(recipesModel));
         startActivity(intent);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mlistState = gridLayoutManager.onSaveInstanceState();
+        outState.putParcelable("state",mlistState);
+        //outState.putSerializable("list",(Serializable) recipesModelList);
+        outState.putInt("fav",flag);
     }
 
     @Override
@@ -201,9 +231,15 @@ public String retUrl(SharedPreferences sharedPreferences){
         }
     }
     public void retFromDb(){
-       List<RecipesModel> recipesModelList = mDb.recipeDao().loadAllRecipes();
-      //  imageAdapter = new ImageAdapter(recipesModelList,getApplicationContext(),MainActivity.this);
-        imageAdapter.updateData(recipesModelList);
+     MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+      viewModel.getmRecipes().observe(this, new Observer<List<RecipesModel>>() {
+          @Override
+          public void onChanged(@Nullable List<RecipesModel> recipesModels) {
+              imageAdapter.updateData(recipesModels);
+
+          }
+      });
+
 
     }
 
@@ -217,11 +253,20 @@ public String retUrl(SharedPreferences sharedPreferences){
         } else {
             loadRecipesData(sharedPreferences);
         }
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String sort = sharedPreferences.getString(getString(R.string.listKey), getString(R.string.listDefValue));
+        if (sort.equals("f")) {
+            retFromDb();
+        } else {
+            loadRecipesData(sharedPreferences);
+        }
+
         //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         //loadRecipesData(sharedPreferences);
     }

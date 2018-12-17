@@ -40,8 +40,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageAdapter
         return new ImageAdapterviewHolder(view);
     }
     public void updateData(List<RecipesModel> recipes) {
-
-        recipesModelList.addAll(recipes);
+        recipesModelList = recipes;
         notifyDataSetChanged();
     }
 
