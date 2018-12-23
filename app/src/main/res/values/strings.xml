@@ -2,7 +2,7 @@
     <string name="app_name">Come and taste</string>
     <string name="settings_title">Settings</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="listDefValue">popular</string>
+    <string name="listDefValue">r</string>
     <string name="listKey">SortBy</string>
     <string name="listTitle">Sort by</string>
     <string name="listEntry1">Popular</string>
@@ -19,4 +19,17 @@
     <string name="listEntryVal1" translatable="false">t</string>
     <string name="listEntryVal2" translatable="false">r</string>
     <string name="listEntryVal3" translatable="false">f</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="title">Recipe Name</string>
+    <string name="rank">Social Ranking</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="rec_details">Recipe Details</string>
+    <string name="content_desc">recipe picture</string>
+    <string name="content_desc1">app name</string>
+    <string name="action_share">Share</string>
+    <string name="details_button">go to source page</string>
+    <string name="transition_name">transition</string>
+    <string name="widget_description">update picture</string>
+    <string name="star_description">store or delete from favourites list</string>
 </resources>

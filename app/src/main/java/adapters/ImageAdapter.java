@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
@@ -48,6 +49,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageAdapter
     public void onBindViewHolder(@NonNull ImageAdapterviewHolder imageAdapterviewHolder, int i) {
         RecipesModel recipesModel = recipesModelList.get(i);
         Picasso.get().load(recipesModel.getImgUrl()).into(imageAdapterviewHolder.imageView);
+        imageAdapterviewHolder.textView.setText(recipesModel.getTitle());
     }
 
     @Override
@@ -58,6 +60,8 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ImageAdapter
     public class ImageAdapterviewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     @BindView(R.id.image_iv)
     ImageView imageView;
+    @BindView(R.id.name_tv)
+    TextView textView;
     public ImageAdapterviewHolder(@NonNull View itemView) {
         super(itemView);
         ButterKnife.bind(this,itemView);

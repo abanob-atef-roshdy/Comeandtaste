@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,11 +58,12 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
     RecyclerView recyclerView;
     ImageAdapter imageAdapter;
     GridLayoutManager gridLayoutManager;
-    Parcelable mlistState;
+
     String mIngredient;
     int pageNumber;
     AppDataBase mDb;
     int flag;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,9 +85,6 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
 
         recyclerView.setAdapter(imageAdapter);
         if(savedInstanceState != null) {
-            mlistState = savedInstanceState.getParcelable("state");
-            gridLayoutManager.onRestoreInstanceState(mlistState);
-            //recipesModelList = (ArrayList) savedInstanceState.getParcelableArrayList("list");
             flag = savedInstanceState.getInt("fav");
             if (flag == 1) {
                 retFromDb();
@@ -93,17 +93,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
                 loadRecipesData(sharedPreferences);
             }
         }
-      //  retFromDb();
 
-
-     /*   AdView mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .build();
-
-        mAdView.loadAd(adRequest);
-        MobileAds.initialize(this,"ca-app-pub-3954911785359391~1804332260");
-       */
 
     }
 
@@ -122,21 +112,28 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    // Display the first 500 characters of the response string.
+
+                    
+                    
                     try {
                        // List<RecipesModel> recipesModelList = new ArrayList<>();
-                        JSONObject all = new JSONObject(response);
-                        JSONArray recipes = all.getJSONArray("recipes");
-                        for(int i = 0;i<recipes.length();i++){
-                            JSONObject recipe = recipes.getJSONObject(i);
-                            String imgUrl = recipe.getString("image_url");
-                            String title = recipe.getString("title");
-                            String source = recipe.getString("source_url");
-                            String rank = recipe.getString("social_rank");
-                            String recId = recipe.getString("recipe_id");
-                             RecipesModel recipesModel = new RecipesModel(imgUrl,title,rank,recId,source);
-                             recipesModelList.add(recipesModel);
+                        if(response.equals("{\"count\": 0, \"recipes\": []}")){
+                            Toast.makeText(MainActivity.this, "no results found please make sure you have entered a valid ingredients name (just use letters and spaces) and look at the previous pages because sometimes a specific ingredient is limited by specific number of pages", Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            JSONObject all = new JSONObject(response);
+                            JSONArray recipes = all.getJSONArray("recipes");
+                            for (int i = 0; i < recipes.length(); i++) {
+                                JSONObject recipe = recipes.getJSONObject(i);
+                                String imgUrl = recipe.getString("image_url");
+                                String title = recipe.getString("title");
+                                String source = recipe.getString("source_url");
+                                String rank = recipe.getString("social_rank");
+                                String recId = recipe.getString("recipe_id");
+                                RecipesModel recipesModel = new RecipesModel(imgUrl, title, rank, recId, source);
+                                recipesModelList.add(recipesModel);
 
+                            }
                         }
 
                         imageAdapter.updateData(recipesModelList);
@@ -152,6 +149,11 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
             }, new Response.ErrorListener() {
         @Override
         public void onErrorResponse(VolleyError error) {
+            SharedPreferences sharedPreferences1 = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            String sort = sharedPreferences1.getString(getString(R.string.listKey),getString(R.string.listDefValue));
+            if(!sort.equals("f")){
+                Toast.makeText(MainActivity.this, "network is not available", Toast.LENGTH_SHORT).show();
+            }
 
         }
     });
@@ -175,7 +177,8 @@ public String retUrl(SharedPreferences sharedPreferences){
         flag = 0;
         mIngredient = "" ;
     }
-    String url = "https://www.food2fork.com/api/search?key=&sort="+sort+"&q="+mIngredient+"&page="+pageNumber;
+    String url = "https://www.food2fork.com/api/search?key=" +
+            "&sort="+sort+"&q="+mIngredient+"&page="+pageNumber;
 
     return url;
 
@@ -192,11 +195,10 @@ public String retUrl(SharedPreferences sharedPreferences){
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mlistState = gridLayoutManager.onSaveInstanceState();
-        outState.putParcelable("state",mlistState);
-        //outState.putSerializable("list",(Serializable) recipesModelList);
+
         outState.putInt("fav",flag);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -235,7 +237,12 @@ public String retUrl(SharedPreferences sharedPreferences){
       viewModel.getmRecipes().observe(this, new Observer<List<RecipesModel>>() {
           @Override
           public void onChanged(@Nullable List<RecipesModel> recipesModels) {
-              imageAdapter.updateData(recipesModels);
+              if(recipesModels.isEmpty()){
+                  Toast.makeText(MainActivity.this, "no items in the favourites list", Toast.LENGTH_SHORT).show();
+              }
+              else {
+                  imageAdapter.updateData(recipesModels);
+              }
 
           }
       });

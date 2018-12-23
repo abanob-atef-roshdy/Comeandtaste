@@ -1,18 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     >
 
+
     <ImageView
         android:id="@+id/image_iv"
+        android:adjustViewBounds="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="200dp"
           android:scaleType="centerCrop"
-        android:layout_margin="8dp"
-        android:contentDescription="picture" />
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:contentDescription="@string/content_desc" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="32dp">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@color/theme_accent"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/name_tv"
+            android:text="crepe"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textStyle="italic"
+            android:textSize="14sp"
+            android:gravity="center_vertical"
+            />
+    </FrameLayout>
 
 
-
-</FrameLayout>
+</LinearLayout>

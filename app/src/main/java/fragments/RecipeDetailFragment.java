@@ -3,10 +3,13 @@ package fragments;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,7 +47,7 @@ import models.RecipesModel;
 public class RecipeDetailFragment extends Fragment  {
     @BindView(R.id.title_tv)
     TextView mTitle;
-    @BindView(R.id.detail_iv)
+    @BindView(R.id.image_iv1)
     ImageView mImageView;
     @BindView(R.id.rank_tv)
     TextView mRank;
@@ -52,11 +55,11 @@ public class RecipeDetailFragment extends Fragment  {
     TextView mIngredients;
     @BindView(R.id.button)
     Button mSourceLauncher;
-    @BindView(R.id.share_b)
-    Button mshareButton;
+    @BindView(R.id.share_fab)
+    FloatingActionButton fabButton;
      RecipesModel recipesModel;
-     @BindView(R.id.db_button)
-     Button mbutton;
+     @BindView(R.id.star_img)
+     ImageView mImg;
      AppDataBase mDb;
      @BindView(R.id.adView)
      AdView mAdView;
@@ -75,13 +78,13 @@ public class RecipeDetailFragment extends Fragment  {
                goToSource();
             }
         });
-        mshareButton.setOnClickListener(new View.OnClickListener() {
+        fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                share();
             }
         });
-        mbutton.setOnClickListener(new View.OnClickListener() {
+        mImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
              storeOrDelete();
@@ -92,7 +95,7 @@ public class RecipeDetailFragment extends Fragment  {
                 .build();
 
         mAdView.loadAd(adRequest);
-        MobileAds.initialize(getActivity(),"ca-app-pub-3954911785359391~1804332260");
+       // MobileAds.initialize(getActivity(),"ca-app-pub-3954911785359391~1804332260");
         return view;
     }
     public void populatUi(){
@@ -116,12 +119,18 @@ public class RecipeDetailFragment extends Fragment  {
                             JSONObject all = new JSONObject(response);
                             JSONObject firstObj = all.getJSONObject("recipe");
                             JSONArray ingredients = firstObj.getJSONArray("ingredients");
-                            ArrayList ingredList = new ArrayList();
+
                             for(int i = 0;i<ingredients.length();i++){
                               //  JSONObject ingredObject = ingredients.get(i);
                                 String ingredVar = ingredients.getString(i);
                                 mIngredients.append(ingredVar+"\n");
+
                             }
+                            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("s",mIngredients.getText().toString());
+                            editor.commit();
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -186,13 +195,13 @@ public class RecipeDetailFragment extends Fragment  {
 
               if(recipesModels.isEmpty()){
                   save();
-                  mbutton.setText("delete");
-                  Toast.makeText(getActivity(), "saved", Toast.LENGTH_SHORT).show();
+                  mImg.setImageResource(R.drawable.ystaricon);
+                  Toast.makeText(getActivity(), "movie was successfully saved to the favourites list", Toast.LENGTH_SHORT).show();
               }
               else {
                   delete();
-                  mbutton.setText("save");
-                  Toast.makeText(getActivity(), "deleted", Toast.LENGTH_SHORT).show();
+                  mImg.setImageResource(R.drawable.staricon);
+                  Toast.makeText(getActivity(), "movie was successfully deleted from the favourites list", Toast.LENGTH_SHORT).show();
               }
               recipesModelList.removeObserver(this);
           }
@@ -207,10 +216,12 @@ public class RecipeDetailFragment extends Fragment  {
            public void onChanged(@Nullable List<RecipesModel> recipesModels) {
 
                if(recipesModels.isEmpty()){
-                   mbutton.setText("save");
+
+                   mImg.setImageResource(R.drawable.staricon);
                }
                else {
-                   mbutton.setText("delete");
+
+                   mImg.setImageResource(R.drawable.ystaricon);
                }
                recipesModelList.removeObserver(this);
            }

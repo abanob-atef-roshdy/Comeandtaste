@@ -1,61 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
+
+android:background="@android:color/white"
+     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <ImageView
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:id="@+id/detail_iv"
-        android:scaleType="centerCrop"
-        />
+        android:layout_height="@dimen/appbar_detail_height"
+        android:elevation="@dimen/toolbar_elevation"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:expandedTitleMarginEnd="64dp"
+            app:expandedTitleMarginStart="48dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <ImageView
+                android:id="@+id/image_iv1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/content_desc"
+                app:layout_collapseMode="pin" />
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                app:layout_collapseMode="parallax"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+
+                />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+
+
+
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         ads:adSize="BANNER"
         ads:adUnitId="@string/banner_ad_unit_id" />
-    <android.support.v7.widget.AppCompatButton
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/db_button"
-        android:text="save"
+   <ImageView
+       android:layout_width="match_parent"
+       android:layout_height="70dp"
+       android:contentDescription="@string/star_description"
+       android:id="@+id/star_img"
+       android:layout_marginTop="8dp"
+       />
+    <TextView
+        style="@style/textViews_labels"
+        android:text="@string/title"
         />
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/title_tv"
-        android:layout_gravity="center"
-        android:textAlignment="center"
+        style="@style/textViews_values"
         />
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/textViews_labels"
+        android:text="@string/rank"
+        />
+
+    <TextView
+        style="@style/textViews_values"
         android:id="@+id/rank_tv"
-        android:layout_gravity="center"
-        android:textAlignment="center"
+
         />
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        style="@style/textViews_labels"
+        android:text="@string/ingredients"
+        />
+    <TextView
+        style="@style/textViews_values"
+        android:textSize="18sp"
         android:id="@+id/ingredients_tv"
-        android:textAlignment="center"
+        />
+            <TextView
+                style="@style/textViews_labels"
+                android:text="@string/rec_details"
+                android:paddingBottom="8dp"
+                />
+
+    <android.support.v7.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/button_elevation"
         android:layout_gravity="center"
-        />
-    <android.support.v7.widget.AppCompatButton
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
         android:id="@+id/button"
-        android:text="go to source"
+        android:background="@color/theme_accent"
+        android:textColor="@android:color/white"
+        android:text="@string/details_button"
+        android:textSize="18sp"
+        android:textAllCaps="false"
         />
 
-    <android.support.v7.widget.AppCompatButton
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:id="@+id/share_b"
-        android:text="share recipe"
-        />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/share_fab"
+        app:pressedTranslationZ="@dimen/fab_elevation_press"
+        android:layout_gravity="bottom|end"
+        app:fabSize="normal"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:layout_marginStart="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_share"
+        android:elevation="@dimen/fab_elevation"
+        android:contentDescription="@string/action_share" />
 
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
