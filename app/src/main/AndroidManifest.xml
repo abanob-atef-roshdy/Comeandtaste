@@ -22,7 +22,7 @@
 
         <activity
             android:name=".MainActivity"
-            android:configChanges="keyboardHidden|orientation"
+            android:configChanges="screenSize|orientation|keyboardHidden"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +40,7 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3954911785359391~1804332260" />
 
-        <activity android:name=".RecipeDetailActivity" />
+        <activity android:name=".RecipeDetailActivity" android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity android:name=".SettingsActivity" />
 
         <receiver android:name="models.IngredientsAppWidget">

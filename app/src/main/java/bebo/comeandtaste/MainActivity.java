@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
     RecyclerView recyclerView;
     ImageAdapter imageAdapter;
     GridLayoutManager gridLayoutManager;
-
     String mIngredient;
     int pageNumber;
     AppDataBase mDb;
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
         ButterKnife.bind(this);
         mDb = AppDataBase.getsInstance(getApplicationContext());
         recipesModelList = new ArrayList<>();
-         gridLayoutManager = new GridLayoutManager(this,2);
+        gridLayoutManager = new GridLayoutManager(this, 2);
         gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setHasFixedSize(true);
@@ -81,15 +80,14 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
 
 
         Context context = getApplicationContext();
-        imageAdapter = new ImageAdapter(recipesModelList,context,MainActivity.this);
+        imageAdapter = new ImageAdapter(recipesModelList, context, MainActivity.this);
 
         recyclerView.setAdapter(imageAdapter);
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             flag = savedInstanceState.getInt("fav");
             if (flag == 1) {
                 retFromDb();
-                }
-                else {
+            } else {
                 loadRecipesData(sharedPreferences);
             }
         }
@@ -104,90 +102,86 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
         super.onDestroy();
     }
 
-    public void loadRecipesData(SharedPreferences sharedPreferences){
-    recipesModelList.clear();
-    RequestQueue queue = Volley.newRequestQueue(this);
+    public void loadRecipesData(SharedPreferences sharedPreferences) {
+        recipesModelList.clear();
+        RequestQueue queue = Volley.newRequestQueue(this);
 
-    StringRequest stringRequest = new StringRequest(Request.Method.GET, retUrl(sharedPreferences),
-            new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, retUrl(sharedPreferences),
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
 
-                    
-                    
-                    try {
-                       // List<RecipesModel> recipesModelList = new ArrayList<>();
-                        if(response.equals("{\"count\": 0, \"recipes\": []}")){
-                            Toast.makeText(MainActivity.this, "no results found please make sure you have entered a valid ingredients name (just use letters and spaces) and look at the previous pages because sometimes a specific ingredient is limited by specific number of pages", Toast.LENGTH_LONG).show();
-                        }
-                        else {
-                            JSONObject all = new JSONObject(response);
-                            JSONArray recipes = all.getJSONArray("recipes");
-                            for (int i = 0; i < recipes.length(); i++) {
-                                JSONObject recipe = recipes.getJSONObject(i);
-                                String imgUrl = recipe.getString("image_url");
-                                String title = recipe.getString("title");
-                                String source = recipe.getString("source_url");
-                                String rank = recipe.getString("social_rank");
-                                String recId = recipe.getString("recipe_id");
-                                RecipesModel recipesModel = new RecipesModel(imgUrl, title, rank, recId, source);
-                                recipesModelList.add(recipesModel);
 
+                        try {
+                            // List<RecipesModel> recipesModelList = new ArrayList<>();
+                            if (response.equals("{\"count\": 0, \"recipes\": []}")) {
+                                Toast.makeText(MainActivity.this, getString(R.string.message), Toast.LENGTH_LONG).show();
+                            } else {
+                                JSONObject all = new JSONObject(response);
+                                JSONArray recipes = all.getJSONArray("recipes");
+                                for (int i = 0; i < recipes.length(); i++) {
+                                    JSONObject recipe = recipes.getJSONObject(i);
+                                    String imgUrl = recipe.getString("image_url");
+                                    String title = recipe.getString("title");
+                                    String source = recipe.getString("source_url");
+                                    String rank = recipe.getString("social_rank");
+                                    String recId = recipe.getString("recipe_id");
+                                    RecipesModel recipesModel = new RecipesModel(imgUrl, title, rank, recId, source);
+                                    recipesModelList.add(recipesModel);
+
+                                }
                             }
+
+                            imageAdapter.updateData(recipesModelList);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
 
-                        imageAdapter.updateData(recipesModelList);
 
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
-
-
-
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                SharedPreferences sharedPreferences1 = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                String sort = sharedPreferences1.getString(getString(R.string.listKey), getString(R.string.listDefValue));
+                if (!sort.equals("f")) {
+                    Toast.makeText(MainActivity.this, getString(R.string.network_message), Toast.LENGTH_SHORT).show();
                 }
-            }, new Response.ErrorListener() {
-        @Override
-        public void onErrorResponse(VolleyError error) {
-            SharedPreferences sharedPreferences1 = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            String sort = sharedPreferences1.getString(getString(R.string.listKey),getString(R.string.listDefValue));
-            if(!sort.equals("f")){
-                Toast.makeText(MainActivity.this, "network is not available", Toast.LENGTH_SHORT).show();
+
             }
+        });
+        queue.add(stringRequest);
 
+    }
+
+    public String retUrl(SharedPreferences sharedPreferences) {
+
+        String sort = sharedPreferences.getString(getString(R.string.listKey), getString(R.string.listDefValue));
+        pageNumber = Integer.parseInt(sharedPreferences.getString(getString(R.string.ed_page_key), getString(R.string.ed_page_defValue)));
+        if (sort.equals("f")) {
+            flag = 1;
+            retFromDb();
+            return "";
+        } else if (sort.equals("r")) {
+            flag = 0;
+            mIngredient = sharedPreferences.getString(getString(R.string.edit_key), getString(R.string.edit_defValue));
+        } else if (sort.equals("t")) {
+            flag = 0;
+            mIngredient = "";
         }
-    });
-    queue.add(stringRequest);
+        String url = "https://www.food2fork.com/api/search?key=" +
+                "666b3d1a587e38dc488df5ca0345f233&sort=" + sort + "&q=" + mIngredient + "&page=" + pageNumber;
 
-}
-public String retUrl(SharedPreferences sharedPreferences){
+        return url;
 
-    String sort = sharedPreferences.getString(getString(R.string.listKey),getString(R.string.listDefValue));
-    pageNumber = Integer.parseInt(sharedPreferences.getString(getString(R.string.ed_page_key),getString(R.string.ed_page_defValue)));
-    if(sort.equals("f")){
-         flag = 1;
-        retFromDb();
-        return "";
     }
-  else if(sort.equals("r")) {
-        flag = 0;
-        mIngredient = sharedPreferences.getString(getString(R.string.edit_key), getString(R.string.edit_defValue));
-    }
-    else if(sort.equals("t")) {
-        flag = 0;
-        mIngredient = "" ;
-    }
-    String url = "https://www.food2fork.com/api/search?key=" +
-            "&sort="+sort+"&q="+mIngredient+"&page="+pageNumber;
-
-    return url;
-
-}
 
 
     @Override
     public void onImageClick(RecipesModel recipesModel) {
-        Intent intent = new Intent(this,RecipeDetailActivity.class);
+        Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putExtra("recipe", Parcels.wrap(recipesModel));
         startActivity(intent);
     }
@@ -196,7 +190,7 @@ public String retUrl(SharedPreferences sharedPreferences){
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt("fav",flag);
+        outState.putInt("fav", flag);
     }
 
 
@@ -207,15 +201,14 @@ public String retUrl(SharedPreferences sharedPreferences){
         inflater.inflate(R.menu.main_menu, menu);
 
 
-
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if(id == R.id.action_settings){
-            Intent intent = new Intent(this,SettingsActivity.class);
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
         return true;
@@ -224,7 +217,7 @@ public String retUrl(SharedPreferences sharedPreferences){
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
 
-         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String sort = sharedPreferences.getString(getString(R.string.listKey), getString(R.string.listDefValue));
         if (sort.equals("f")) {
             retFromDb();
@@ -232,20 +225,20 @@ public String retUrl(SharedPreferences sharedPreferences){
             loadRecipesData(sharedPreferences);
         }
     }
-    public void retFromDb(){
-     MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-      viewModel.getmRecipes().observe(this, new Observer<List<RecipesModel>>() {
-          @Override
-          public void onChanged(@Nullable List<RecipesModel> recipesModels) {
-              if(recipesModels.isEmpty()){
-                  Toast.makeText(MainActivity.this, "no items in the favourites list", Toast.LENGTH_SHORT).show();
-              }
-              else {
-                  imageAdapter.updateData(recipesModels);
-              }
 
-          }
-      });
+    public void retFromDb() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getmRecipes().observe(this, new Observer<List<RecipesModel>>() {
+            @Override
+            public void onChanged(@Nullable List<RecipesModel> recipesModels) {
+                if (recipesModels.isEmpty()) {
+                    Toast.makeText(MainActivity.this, getString(R.string.favourite_message), Toast.LENGTH_SHORT).show();
+                } else {
+                    imageAdapter.updateData(recipesModels);
+                }
+
+            }
+        });
 
 
     }
@@ -274,7 +267,5 @@ public String retUrl(SharedPreferences sharedPreferences){
             loadRecipesData(sharedPreferences);
         }
 
-        //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        //loadRecipesData(sharedPreferences);
     }
 }

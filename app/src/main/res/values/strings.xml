@@ -31,5 +31,14 @@
     <string name="details_button">go to source page</string>
     <string name="transition_name">transition</string>
     <string name="widget_description">update picture</string>
+    <string name="network_message">network is not available</string>
+    <string name="summary_empty">no value</string>
+    <string name="invalid_number">please enter a valid number</string>
+    <string name="number_input">please enter a value between 1 and 3500</string>
+    <string name="invalid_ingredient">please enter a valid ingredient name</string>
+    <string name="favourite_message">no items in the favourites list</string>
+
+    <string name="message">no results found please make sure you have entered a valid ingredients name (just use letters and spaces) and look at the previous pages because sometimes a specific ingredient is limited by specific number of pages</string>
+
     <string name="star_description">store or delete from favourites list</string>
 </resources>

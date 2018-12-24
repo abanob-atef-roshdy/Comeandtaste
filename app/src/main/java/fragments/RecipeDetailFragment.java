@@ -44,7 +44,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import models.RecipesModel;
 
-public class RecipeDetailFragment extends Fragment  {
+public class RecipeDetailFragment extends Fragment {
     @BindView(R.id.title_tv)
     TextView mTitle;
     @BindView(R.id.image_iv1)
@@ -57,17 +57,21 @@ public class RecipeDetailFragment extends Fragment  {
     Button mSourceLauncher;
     @BindView(R.id.share_fab)
     FloatingActionButton fabButton;
-     RecipesModel recipesModel;
-     @BindView(R.id.star_img)
-     ImageView mImg;
-     AppDataBase mDb;
-     @BindView(R.id.adView)
-     AdView mAdView;
+    RecipesModel recipesModel;
+    @BindView(R.id.star_img)
+    ImageView mImg;
+    AppDataBase mDb;
+    @BindView(R.id.adView)
+    AdView mAdView;
+    String url;
+    String id1;
+    String idStar;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_detail,container,false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.fragment_detail, container, false);
+        ButterKnife.bind(this, view);
         populatUi();
         getIngredients();
         mDb = AppDataBase.getsInstance(getContext());
@@ -75,19 +79,19 @@ public class RecipeDetailFragment extends Fragment  {
         mSourceLauncher.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               goToSource();
+                goToSource();
             }
         });
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               share();
+                share();
             }
         });
         mImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-             storeOrDelete();
+                storeOrDelete();
             }
         });
         AdRequest adRequest = new AdRequest.Builder()
@@ -95,22 +99,27 @@ public class RecipeDetailFragment extends Fragment  {
                 .build();
 
         mAdView.loadAd(adRequest);
-       // MobileAds.initialize(getActivity(),"ca-app-pub-3954911785359391~1804332260");
         return view;
     }
-    public void populatUi(){
-        Picasso.get().load(recipesModel.getImgUrl()).into(mImageView);
-    mTitle.setText(recipesModel.getTitle());
-    mRank.setText(recipesModel.getRank()+"/100");
 
+    public void populatUi() {
+        if (recipesModel != null) {
+            Picasso.get().load(recipesModel.getImgUrl()).into(mImageView);
+            mTitle.setText(recipesModel.getTitle());
+            mRank.setText(recipesModel.getRank() + "/100");
+
+        }
     }
-    public void setRcipeModel(RecipesModel recipesModel){
+
+    public void setRcipeModel(RecipesModel recipesModel) {
         this.recipesModel = recipesModel;
     }
 
-    public void getIngredients(){
+    public void getIngredients() {
         RequestQueue queue = Volley.newRequestQueue(getContext());
-        String url = "https://www.food2fork.com/api/get?key=&rId="+recipesModel.getRecipeId();
+        if (recipesModel != null) {
+            url = "https://www.food2fork.com/api/get?key=&rId=" + recipesModel.getRecipeId();
+        }
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -120,15 +129,15 @@ public class RecipeDetailFragment extends Fragment  {
                             JSONObject firstObj = all.getJSONObject("recipe");
                             JSONArray ingredients = firstObj.getJSONArray("ingredients");
 
-                            for(int i = 0;i<ingredients.length();i++){
-                              //  JSONObject ingredObject = ingredients.get(i);
+                            for (int i = 0; i < ingredients.length(); i++) {
+                                //  JSONObject ingredObject = ingredients.get(i);
                                 String ingredVar = ingredients.getString(i);
-                                mIngredients.append(ingredVar+"\n");
+                                mIngredients.append(ingredVar + "\n");
 
                             }
                             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                             SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("s",mIngredients.getText().toString());
+                            editor.putString("s", mIngredients.getText().toString());
                             editor.commit();
 
                         } catch (JSONException e) {
@@ -144,7 +153,7 @@ public class RecipeDetailFragment extends Fragment  {
             }
         });
 
-// Add the request to the RequestQueue.
+
         queue.add(stringRequest);
 
 
@@ -158,7 +167,8 @@ public class RecipeDetailFragment extends Fragment  {
             startActivity(intent);
         }
     }
-    public void share(){
+
+    public void share() {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, recipesModel.getSourceUrl());
@@ -166,7 +176,8 @@ public class RecipeDetailFragment extends Fragment  {
         startActivity(sendIntent);
 
     }
-    public void save(){
+
+    public void save() {
         AppExecutor.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -174,9 +185,10 @@ public class RecipeDetailFragment extends Fragment  {
             }
         });
 
-       // Toast.makeText(getActivity(), "saved", Toast.LENGTH_SHORT).show();
+        
     }
-    public void delete(){
+
+    public void delete() {
         AppExecutor.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -186,47 +198,51 @@ public class RecipeDetailFragment extends Fragment  {
         });
 
     }
-    public void storeOrDelete(){
-        String id = recipesModel.getRecipeId();
-   final LiveData< List<RecipesModel>> recipesModelList = mDb.recipeDao().loadRecipeById(id);
-      recipesModelList.observe(this, new Observer<List<RecipesModel>>() {
-          @Override
-          public void onChanged(@Nullable List<RecipesModel> recipesModels) {
 
-              if(recipesModels.isEmpty()){
-                  save();
-                  mImg.setImageResource(R.drawable.ystaricon);
-                  Toast.makeText(getActivity(), "movie was successfully saved to the favourites list", Toast.LENGTH_SHORT).show();
-              }
-              else {
-                  delete();
-                  mImg.setImageResource(R.drawable.staricon);
-                  Toast.makeText(getActivity(), "movie was successfully deleted from the favourites list", Toast.LENGTH_SHORT).show();
-              }
-              recipesModelList.removeObserver(this);
-          }
-      });
+    public void storeOrDelete() {
+        if (recipesModel != null) {
+            id1 = recipesModel.getRecipeId();
+        }
+        final LiveData<List<RecipesModel>> recipesModelList = mDb.recipeDao().loadRecipeById(id1);
+        recipesModelList.observe(this, new Observer<List<RecipesModel>>() {
+            @Override
+            public void onChanged(@Nullable List<RecipesModel> recipesModels) {
+
+                if (recipesModels.isEmpty()) {
+                    save();
+                    mImg.setImageResource(R.drawable.ystaricon);
+                    Toast.makeText(getActivity(), "movie was successfully saved to the favourites list", Toast.LENGTH_SHORT).show();
+                } else {
+                    delete();
+                    mImg.setImageResource(R.drawable.staricon);
+                    Toast.makeText(getActivity(), "movie was successfully deleted from the favourites list", Toast.LENGTH_SHORT).show();
+                }
+                recipesModelList.removeObserver(this);
+            }
+        });
 
     }
-    public void starColor(){
-        String id = recipesModel.getRecipeId();
-     final   LiveData< List<RecipesModel>> recipesModelList = mDb.recipeDao().loadRecipeById(id);
-       recipesModelList.observe(this, new Observer<List<RecipesModel>>() {
-           @Override
-           public void onChanged(@Nullable List<RecipesModel> recipesModels) {
 
-               if(recipesModels.isEmpty()){
+    public void starColor() {
+        if (recipesModel != null) {
+            idStar = recipesModel.getRecipeId();
+        }
+        final LiveData<List<RecipesModel>> recipesModelList = mDb.recipeDao().loadRecipeById(idStar);
+        recipesModelList.observe(this, new Observer<List<RecipesModel>>() {
+            @Override
+            public void onChanged(@Nullable List<RecipesModel> recipesModels) {
 
-                   mImg.setImageResource(R.drawable.staricon);
-               }
-               else {
+                if (recipesModels.isEmpty()) {
 
-                   mImg.setImageResource(R.drawable.ystaricon);
-               }
-               recipesModelList.removeObserver(this);
-           }
+                    mImg.setImageResource(R.drawable.staricon);
+                } else {
 
-       });
+                    mImg.setImageResource(R.drawable.ystaricon);
+                }
+                recipesModelList.removeObserver(this);
+            }
+
+        });
 
     }
 }

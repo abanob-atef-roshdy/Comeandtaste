@@ -43,7 +43,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         }
         else if(preference instanceof EditTextPreference){
             if(value.equals("")){
-                preference.setSummary("no value");
+                preference.setSummary(getString(R.string.summary_empty));
             }
             else {
                 preference.setSummary(value);
@@ -71,7 +71,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 for(int i = 0;i<a.length;i++){
                     if(edvalue.contains(a[i])) {
 
-                        String message = "please enter a valid ingredient name";
+                        String message = getString(R.string.invalid_ingredient);
                         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                         return false;
                     }
@@ -79,7 +79,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 }
 
             }catch (InputMismatchException i){
-                String message = "please enter a valid ingredient name";
+                String message = getString(R.string.invalid_ingredient);
                 Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                 return false;
             }
@@ -88,12 +88,12 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             try {
                 int pageValue = Integer.parseInt(o.toString());
                 if(pageValue<1 || pageValue>3500){
-                    Toast.makeText(getActivity(), "please enter a value between 1 and 3500", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getString(R.string.number_input), Toast.LENGTH_SHORT).show();
                     return false;
                 }
             }
             catch (NumberFormatException n){
-                Toast.makeText(getActivity(), "please enter a valid number", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.invalid_number), Toast.LENGTH_SHORT).show();
                 return false;
             }
 
