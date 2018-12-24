@@ -185,7 +185,7 @@ public class RecipeDetailFragment extends Fragment {
             }
         });
 
-        
+
     }
 
     public void delete() {
