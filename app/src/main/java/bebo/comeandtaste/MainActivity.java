@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
             mIngredient = "";
         }
         String url = "https://www.food2fork.com/api/search?key=" +
-                "666b3d1a587e38dc488df5ca0345f233&sort=" + sort + "&q=" + mIngredient + "&page=" + pageNumber;
+                "4d9d538f0f75cdaeb40dfc4fb383e75c&sort=" + sort + "&q=" + mIngredient + "&page=" + pageNumber;
 
         return url;
 
@@ -233,6 +233,7 @@ public class MainActivity extends AppCompatActivity implements ImageAdapter.Imag
             public void onChanged(@Nullable List<RecipesModel> recipesModels) {
                 if (recipesModels.isEmpty()) {
                     Toast.makeText(MainActivity.this, getString(R.string.favourite_message), Toast.LENGTH_SHORT).show();
+                    imageAdapter.updateData(recipesModels);
                 } else {
                     imageAdapter.updateData(recipesModels);
                 }
