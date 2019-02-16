@@ -118,7 +118,7 @@ public class RecipeDetailFragment extends Fragment {
     public void getIngredients() {
         RequestQueue queue = Volley.newRequestQueue(getContext());
         if (recipesModel != null) {
-            url = "https://www.food2fork.com/api/get?key=&rId=" + recipesModel.getRecipeId();
+            url = "https://www.food2fork.com/api/get?key=4d9d538f0f75cdaeb40dfc4fb383e75c&rId=" + recipesModel.getRecipeId();
         }
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -211,11 +211,11 @@ public class RecipeDetailFragment extends Fragment {
                 if (recipesModels.isEmpty()) {
                     save();
                     mImg.setImageResource(R.drawable.ystaricon);
-                    Toast.makeText(getActivity(), "movie was successfully saved to the favourites list", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Recipe was successfully saved to the favourites list", Toast.LENGTH_SHORT).show();
                 } else {
                     delete();
                     mImg.setImageResource(R.drawable.staricon);
-                    Toast.makeText(getActivity(), "movie was successfully deleted from the favourites list", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Recipe was successfully deleted from the favourites list", Toast.LENGTH_SHORT).show();
                 }
                 recipesModelList.removeObserver(this);
             }
